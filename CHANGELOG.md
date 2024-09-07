@@ -1,3 +1,7 @@
+## v1.2.42-quartinal.6
+
+- set publicDir to null and add a postinstall script
+
 ## v1.2.41
 
 - handle removeStaleSessions of .get() returning undefined from corrupted session files

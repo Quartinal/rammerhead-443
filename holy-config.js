@@ -1,7 +1,6 @@
 'use strict';
 
 const cookie = require('cookie');
-const path = require('path');
 
 module.exports = {
     //// HOSTING CONFIGURATION ////
@@ -9,7 +8,7 @@ module.exports = {
     bindingAddress: '0.0.0.0',
     port: process.env.PORT || 443,
     crossDomainPort: 4431,
-    publicDir: path.join(__dirname, './public'),
+    publicDir: null,
 
     ssl: null,
 
