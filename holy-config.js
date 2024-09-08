@@ -6,7 +6,7 @@ module.exports = {
     //// HOSTING CONFIGURATION ////
 
     bindingAddress: '0.0.0.0',
-    port: process.env.PORT || 443,
+    port: 443,
     crossDomainPort: 4431,
     publicDir: null,
 
