@@ -10,7 +10,8 @@ const forbiddenRoutes = [
     '/iframe-task.js',
     '/messaging',
     '/transport-worker.js',
-    '/worker-hammerhead.js'
+    '/worker-hammerhead.js',
+    '/blocklist.txt'
 ];
 
 const isDirectory = (dir) => fs.lstatSync(dir).isDirectory();

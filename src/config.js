@@ -81,7 +81,15 @@ module.exports = {
     // removes reverse proxy headers
     // cloudflare example:
     // stripClientHeaders: ['cf-ipcountry', 'cf-ray', 'x-forwarded-proto', 'cf-visitor', 'cf-connecting-ip', 'cdn-loop', 'x-forwarded-for'],
-    stripClientHeaders: [],
+    stripClientHeaders: [
+        'cf-ipcountry',
+        'cf-ray',
+        'x-forwarded-proto',
+        'cf-visitor',
+        'cf-connecting-ip',
+        'cdn-loop',
+        'x-forwarded-for'
+    ],
     // if you want to modify response headers, like removing the x-frame-options header, do it like so:
     // rewriteServerHeaders: {
     //     // you can also specify a function to modify/add the header using the original value (undefined if adding the header)

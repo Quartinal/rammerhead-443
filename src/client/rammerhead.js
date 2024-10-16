@@ -17,6 +17,8 @@
         fixElementGetter();
         fixCrossWindowLocalStorage();
 
+        implementAdBlocking();
+
         delete window.overrideGetProxyUrl;
         delete window.overrideParseProxyUrl;
         delete window.overrideIsCrossDomainWindows;
@@ -177,6 +179,72 @@
             keyChanges = [];
             return updates;
         }
+    }
+
+    function implementAdBlocking() {
+        let blocklist = [];
+
+        function fetchBlocklist() {
+            const request = new XMLHttpRequest();
+            request.open('GET', '/blocklist.txt', false);
+            request.send();
+            if (request.status === 200) {
+                blocklist = request.responseText
+                    .split('\n')
+                    .map((domain) => domain.trim())
+                    .filter((domain) => domain);
+            } else {
+                console.warn('Failed to fetch blocklist');
+            }
+        }
+
+        fetchBlocklist();
+
+        const adBlockingScript = `
+            (function() {
+                const blocklist = ${JSON.stringify(blocklist)};
+                const hammerhead = window['%hammerhead%'];
+                
+                function isBlockedDomain(url) {
+                    // Unshuffle the URL first
+                    const unshuffledUrl = hammerhead.utils.url.parseProxyUrl(url).destUrl;
+                    const urlObj = new URL(unshuffledUrl);
+                    return blocklist.some(domain => urlObj.hostname.includes(domain) || urlObj.hostname.startsWith(domain));
+                }
+
+                function removeBlockedElements() {
+                    const elements = document.querySelectorAll('script, iframe, img, embed, object');
+                    elements.forEach(element => {
+                        const src = element.src || element.data;
+                        if (src && isBlockedDomain(src)) {
+                            element.remove();
+                        }
+                    });
+                }
+
+                // Run initially
+                removeBlockedElements();
+
+                // Set up a MutationObserver to check for new elements
+                const observer = new MutationObserver((mutations) => {
+                    mutations.forEach((mutation) => {
+                        if (mutation.type === 'childList') {
+                            removeBlockedElements();
+                        }
+                    });
+                });
+
+                observer.observe(document.body, { childList: true, subtree: true });
+            })();
+        `;
+
+        const processedScript = hammerhead.processScript(adBlockingScript);
+
+        const scriptElement = document.createElement('script');
+        scriptElement.textContent = processedScript;
+        (document.head || document.documentElement).appendChild(scriptElement);
+
+        scriptElement.parentNode.removeChild(scriptElement);
     }
 
     var noShuffling = false;
