@@ -186,7 +186,7 @@
 
         function fetchBlocklist() {
             const request = new XMLHttpRequest();
-            request.open('GET', '/blocklist.txt', false);
+            request.open('GET', location.origin + '/blocklist.txt', false);
             request.send();
             if (request.status === 200) {
                 blocklist = request.responseText
@@ -222,19 +222,34 @@
                     });
                 }
 
-                // Run initially
-                removeBlockedElements();
+                function initializeObserver() {
+                    if (!document.body) {
+                        // If document.body is not available, retry after a short delay
+                        setTimeout(initializeObserver, 50);
+                        return;
+                    }
 
-                // Set up a MutationObserver to check for new elements
-                const observer = new MutationObserver((mutations) => {
-                    mutations.forEach((mutation) => {
-                        if (mutation.type === 'childList') {
-                            removeBlockedElements();
-                        }
+                    // Run initially
+                    removeBlockedElements();
+
+                    // Set up a MutationObserver to check for new elements
+                    const observer = new MutationObserver((mutations) => {
+                        mutations.forEach((mutation) => {
+                            if (mutation.type === 'childList') {
+                                removeBlockedElements();
+                            }
+                        });
                     });
-                });
 
-                observer.observe(document.body, { childList: true, subtree: true });
+                    observer.observe(document.body, { childList: true, subtree: true });
+                }
+
+                // Wait for DOM to be ready
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', initializeObserver);
+                } else {
+                    initializeObserver();
+                }
             })();
         `;
 
