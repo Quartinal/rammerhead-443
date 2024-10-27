@@ -115,7 +115,8 @@ module.exports = {
     generatePrefix: (level) => `[${new Date().toISOString()}] [${level.toUpperCase()}] `,
 
     // logger depends on this value
-    getIP: (req) => req.socket.remoteAddress
+    getIP: (req) => req.socket.remoteAddress,
+    getIPProxy: req => (req.headers['x-forwarded-for'] || req.connection.remoteAddress || '').split(',')[0].trim()
 };
 
 if (fs.existsSync(path.join(__dirname, '../config.js'))) Object.assign(module.exports, require('../config'));
