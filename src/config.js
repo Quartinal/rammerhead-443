@@ -46,7 +46,25 @@ module.exports = {
             protocol
         };
     },
-    getServerInfoProxy: (req) => ({ hostname: new URL('https://' + req.headers.host).hostname, port: 443, crossDomainPort: 4431, protocol: 'https:' }),
+    //modified from rammerhead-heroku
+    getServerInfoProxy: (req) => {
+        let origin;
+
+        try {
+            origin = new URL(req.headers.origin);
+        } catch (error) {
+            origin = new URL(`https://${req.headers.host}`);
+        }
+
+        const { hostname, port, protocol } = origin;
+
+        return {
+            hostname,
+            port,
+            crossDomainPort: port,
+            protocol
+        };
+    },
     // example of non-hard-coding the hostname header
     // getServerInfo: (req) => {
     //     return { hostname: new URL('http://' + req.headers.host).hostname, port: 443, crossDomainPort: 8443, protocol: 'https: };
