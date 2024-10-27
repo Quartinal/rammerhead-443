@@ -602,9 +602,6 @@ class RammerheadProxy extends Proxy {
                 path.join(__dirname, '../client/transport-worker' + (process.env.DEVELOPMENT ? '.js' : '.min.js'))
             );
         }
-        if (route === '/blocklist.txt') {
-            handler.content = fs.readFileSync(path.join(__dirname, '../client/blocklist.txt'));
-        }
         super.GET(route, handler);
     }
 
