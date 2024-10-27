@@ -1,4 +1,5 @@
 const path = require('path');
+const cookie = require('cookie');
 const fs = require('fs');
 const os = require('os');
 const RammerheadJSMemCache = require('./classes/RammerheadJSMemCache.js');
@@ -9,7 +10,7 @@ const enableWorkers = os.cpus().length !== 1;
 module.exports = {
     //// HOSTING CONFIGURATION ////
 
-    bindingAddress: '127.0.0.1',
+    bindingAddress: '0.0.0.0',
     port: 8080,
     crossDomainPort: 8081,
     publicDir: null, // set to null to disable
@@ -25,7 +26,45 @@ module.exports = {
     // this function's return object will determine how the client url rewriting will work.
     // set them differently from bindingAddress and port if rammerhead is being served
     // from a reverse proxy.
-    getServerInfo: () => ({ hostname: 'localhost', port: 8080, crossDomainPort: 8081, protocol: 'http:' }),
+    getServerInfo: (req) => {
+        const { origin_proxy } = cookie.parse(req.headers.cookie || '');
+
+        let origin;
+
+        try {
+            origin = new URL(origin_proxy);
+        } catch (error) {
+            origin = new URL(`${req.socket.encrypted ? 'https:' : 'http:'}//${req.headers.host}`);
+        }
+
+        const { hostname, port, protocol } = origin;
+
+        return {
+            hostname,
+            port,
+            crossDomainPort: port,
+            protocol
+        };
+    },
+    //modified from rammerhead-heroku
+    getServerInfoProxy: (req) => {
+        let origin;
+
+        try {
+            origin = new URL(req.headers.origin);
+        } catch (error) {
+            origin = new URL(`https://${req.headers.host}`);
+        }
+
+        const { hostname, port, protocol } = origin;
+
+        return {
+            hostname,
+            port,
+            crossDomainPort: port,
+            protocol
+        };
+    },
     // example of non-hard-coding the hostname header
     // getServerInfo: (req) => {
     //     return { hostname: new URL('http://' + req.headers.host).hostname, port: 443, crossDomainPort: 8443, protocol: 'https: };
@@ -68,9 +107,7 @@ module.exports = {
     //     // 'x-frame-options': (originalHeaderValue) => '',
     //     'x-frame-options': null, // set to null to tell rammerhead that you want to delete it
     // },
-    rewriteServerHeaders: {
-        'x-frame-options': null
-    },
+    rewriteServerHeaders: {},
 
     //// SESSION STORE CONFIG ////
 
@@ -97,8 +134,7 @@ module.exports = {
 
     // logger depends on this value
     getIP: (req) => req.socket.remoteAddress,
-    // use the example below if rammerhead is sitting behind a reverse proxy like nginx
-    getIPProxy: (req) => (req.headers['x-forwarded-for'] || req.connection.remoteAddress || '').split(',')[0].trim()
+    getIPProxy: req => (req.headers['x-forwarded-for'] || req.connection.remoteAddress || '').split(',')[0].trim()
 };
 
 if (fs.existsSync(path.join(__dirname, '../config.js'))) Object.assign(module.exports, require('../config'));

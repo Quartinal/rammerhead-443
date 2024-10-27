@@ -15,9 +15,10 @@ const createRammerhead = (options) => {
 
     let ipGet = null;
 
+    //maybe fixed?
     if (options.reverseProxy !== true) {
         ipGet = config.getIP;
-    } else {
+    } else if (options.reverseProxy === true) {
         ipGet = config.getIPProxy;
     }
 
@@ -25,11 +26,11 @@ const createRammerhead = (options) => {
         logger,
         loggerGetIP: ipGet,
         bindingAddress: config.bindingAddress,
-        port: config.port,
-        crossDomainPort: null,
+        port: options.reverseProxy !== true ? config.port : 443,
+        crossDomainPort: options.reverseProxy !== true ? null : 4431,
         dontListen: true,
         ssl: config.ssl,
-        getServerInfo: config.getServerInfo,
+        getServerInfo: options.reverseProxy !== true ? config.getServerInfo : config.getServerInfoProxy,
         disableLocalStorageSync: config.disableLocalStorageSync,
         diskJsCachePath: config.diskJsCachePath,
         jsCacheSize: config.jsCacheSize
