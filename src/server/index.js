@@ -15,10 +15,11 @@ const createRammerhead = (options) => {
 
     let ipGet = null;
 
+    //maybe fixed?
     if (options.reverseProxy !== true) {
         ipGet = config.getIP;
     } else {
-        ipGet = config.getIPProxy;
+        ipGet = config.getIP;
     }
 
     const proxyServer = new RammerheadProxy({

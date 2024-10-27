@@ -114,9 +114,7 @@ module.exports = {
     generatePrefix: (level) => `[${new Date().toISOString()}] [${level.toUpperCase()}] `,
 
     // logger depends on this value
-    getIP: (req) => req.socket.remoteAddress,
-    // use the example below if rammerhead is sitting behind a reverse proxy like nginx
-    getIPProxy: (req) => (req.headers['x-forwarded-for'] || req.connection.remoteAddress || '').split(',')[0].trim()
+    getIP: (req) => req.socket.remoteAddress
 };
 
 if (fs.existsSync(path.join(__dirname, '../config.js'))) Object.assign(module.exports, require('../config'));
