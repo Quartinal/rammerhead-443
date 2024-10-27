@@ -27,7 +27,7 @@ const createRammerhead = (options) => {
         loggerGetIP: ipGet,
         bindingAddress: config.bindingAddress,
         port: options.reverseProxy !== true ? config.port : 443,
-        crossDomainPort: options.reverseProxy !== true ? null : 4431,
+        crossDomainPort: null,
         dontListen: true,
         ssl: config.ssl,
         getServerInfo: options.reverseProxy !== true ? config.getServerInfo : config.getServerInfoProxy,
