@@ -46,6 +46,7 @@ module.exports = {
             protocol
         };
     },
+    getServerInfoProxy: (req) => ({ hostname: new URL('https://' + req.headers.host).hostname, port: 443, crossDomainPort: 4431, protocol: 'https:' }),
     // example of non-hard-coding the hostname header
     // getServerInfo: (req) => {
     //     return { hostname: new URL('http://' + req.headers.host).hostname, port: 443, crossDomainPort: 8443, protocol: 'https: };

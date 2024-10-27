@@ -30,7 +30,7 @@ const createRammerhead = (options) => {
         crossDomainPort: options.reverseProxy !== true ? null : 4431,
         dontListen: true,
         ssl: config.ssl,
-        getServerInfo: config.getServerInfo,
+        getServerInfo: options.reverseProxy !== true ? config.getServerInfo : config.getServerInfoProxy,
         disableLocalStorageSync: config.disableLocalStorageSync,
         diskJsCachePath: config.diskJsCachePath,
         jsCacheSize: config.jsCacheSize
