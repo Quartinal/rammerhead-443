@@ -18,7 +18,7 @@ const createRammerhead = (options) => {
     //maybe fixed?
     if (options.reverseProxy !== true) {
         ipGet = config.getIP;
-    } else if (config.reverseProxy === true) {
+    } else if (options.reverseProxy === true) {
         ipGet = config.getIPProxy;
     }
 
